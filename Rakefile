@@ -1,4 +1,4 @@
-task :default => :haml
+task :default => [:haml, :javascript]
 
 directory "build"
 
@@ -14,11 +14,14 @@ task :static => :downloadable_static
 FileList["src/*.haml"].each do |haml_file|
     dest = haml_file.pathmap("build/%n.html")
     task :haml => dest
-    file dest => ["build", haml_file, :javascript, :static] do
+    file dest => ["build", haml_file, :static] do
         cd "build" do
             sh "haml -I .. -r custom_haml ../#{haml_file} ../#{dest}"
         end
     end 
+    if ENV["DEVEL"].nil? then
+        file dest => :javascript
+    end
 end
 
 FileList["src/*.coffee"].each do |coffee_file|
@@ -52,10 +55,21 @@ downloads.each_pair do |name, src|
 end
 
 FileList["static/*"].each do |static|
-    puts static
+    dest = 'build' + static.sub(/^static/, '')
+    file dest => static do
+        cp static, dest
+    end
+    task :static => dest
 end
 
 task :clear do
     rm_rf "static_downloads"
     rm_rf "build"
+end
+
+task :perpet do
+    while true do
+        sh 'rake'
+        sleep 1
+    end
 end

@@ -1,5 +1,7 @@
+IS_NOT_DEVEL = ENV["DEVEL"].nil?
+
 def load_javascript filename
-    if ENV['DEBUG'].nil? then
+    if IS_NOT_DEVEL then
         File.open(filename) do |file|
             haml_tag(:script, file.read, :type => "text/javascript")
         end
@@ -9,7 +11,7 @@ def load_javascript filename
 end
 
 def load_css filename
-    if ENV['DEBUG'].nil? then
+    if IS_NOT_DEVEL then
         File.open(filename) do |file|
             haml_tag(:style, file.read, :type => "text/css")
         end
