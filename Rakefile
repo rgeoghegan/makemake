@@ -62,8 +62,11 @@ FileList["static/*"].each do |static|
     task :static => dest
 end
 
-task :clear do
+task :clear_all => :clear do
     rm_rf "static_downloads"
+end
+
+task :clear do
     rm_rf "build"
 end
 
