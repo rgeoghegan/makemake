@@ -39,6 +39,8 @@ def downloads()
     return {}
 end
 
+task :downloadable_static
+
 directory "static_downloads"
 downloads.each_pair do |name, src|
     dest = "static_downloads/#{name}"
@@ -54,12 +56,16 @@ downloads.each_pair do |name, src|
     end
 end
 
-FileList["static/*"].each do |static|
-    dest = 'build' + static.sub(/^static/, '')
-    file dest => static do
-        cp static, dest
+FileList["static/**/*"].each do |static|
+    if File.file? static then
+        dest = 'build' + static.sub(/^static/, '')
+        dirname = File.dirname dest
+        directory dirname
+        file dest => [dirname, static] do
+            cp static, dest
+        end
+        task :static => dest
     end
-    task :static => dest
 end
 
 task :clear_all => :clear do
