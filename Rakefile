@@ -1,15 +1,20 @@
-task :default => [:haml, :javascript]
-
-directory "build"
+task :default => :haml
 
 desc "Compile the haml files into html"
-task :haml
+task :haml => :javascript
 
 desc "Compile the coffee scripts into javascript"
 task :javascript
 
 desc "Place all the static files in the right place"
 task :static => :downloadable_static
+
+desc "Package everything into one html file"
+task :package => [:clear, :set_to_prod, :haml]
+
+task :set_to_prod do
+    ENV["PROD"] = "true"
+end
 
 FileList["src/*.haml"].each do |haml_file|
     dest = haml_file.pathmap("build/%n.html")
@@ -19,7 +24,7 @@ FileList["src/*.haml"].each do |haml_file|
             sh "haml -I .. -r custom_haml ../#{haml_file} ../#{dest}"
         end
     end 
-    if ENV["DEVEL"].nil? then
+    if not ENV["PROD"].nil? then
         file dest => :javascript
     end
 end
@@ -68,14 +73,17 @@ FileList["static/**/*"].each do |static|
     end
 end
 
+desc "Clears the build directory AND the static downloads directory"
 task :clear_all => :clear do
     rm_rf "static_downloads"
 end
 
+desc "Clears the build directory"
 task :clear do
     rm_rf "build"
 end
 
+desc "Run this script every second to pick up changes"
 task :perpet do
     while true do
         sh 'rake'
