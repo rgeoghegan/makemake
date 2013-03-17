@@ -10,10 +10,10 @@ desc "Place all the static files in the right place"
 task :static => :downloadable_static
 
 desc "Package everything into one html file"
-task :package => [:clear, :set_to_prod, :static, :javascript, :haml]
+task :package => [:clear, :set_package, :static, :javascript, :haml]
 
-task :set_to_prod do
-    ENV["PROD"] = "true"
+task :set_package do
+    ENV["PACKAGE"] = "true"
 end
 
 directory "build"

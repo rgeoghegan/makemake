@@ -1,4 +1,5 @@
-PACKAGE = not ENV["PACKAGE"].nil?
+
+PACKAGE = ! ENV['PACKAGE'].nil?
 
 def include_tag(tag_name, filename, src_attr, opts={})
     attrs = {}
@@ -17,12 +18,8 @@ def include_tag(tag_name, filename, src_attr, opts={})
 end
 
 def include_js(filename, opts={})
-    include_tag(
-        :script,
-        filename,
-        :src,
-        {:type => "text/javascript"}.update opts
-    )
+    attrs = {:type => "text/javascript"}.update(opts)
+    include_tag(:script, filename, :src, attrs)
 end
 
 def include_css(filename, opts={})
