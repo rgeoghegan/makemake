@@ -1,3 +1,4 @@
+require 'base64'
 
 PACKAGE = ! ENV['PACKAGE'].nil?
 
@@ -32,4 +33,29 @@ def include_css(filename, opts={})
     end
 
     include_tag(tag, filename, :href, attrs.update(opts))
+end
+
+def include_img(filename, mimetype=nil, attrs={})
+    if mimetype.nil?
+        [
+            [/.*\.jpg/, "image/jpeg"],
+            [/.*\.gif/, "image/gif"],
+            [/.*\.png/, "image/png"]
+        ].each do |regex, mime|
+            if regex.match(filename) then
+                mimetype = mime
+                break
+            end
+        end
+    end
+
+    opts = {:src => filename}
+    if PACKAGE then
+        content = File.open(filename) do |file|
+            Base64.encode64(file.read)
+        end
+        opts = {:src => "data:#{mimetype};base64,#{content}"}
+    end
+    opts.update(attrs)
+    return haml_tag(:img, opts)
 end
