@@ -1,21 +1,29 @@
 IS_DEVEL = ENV["PROD"].nil?
 
-def load_javascript filename
+def load_javascript(filename, opts={})
+    attrs = {:type => "text/javascript"}
     if IS_DEVEL then
-        haml_tag(:script, {:src=>filename, :type => "text/javascript"})
+        attrs[:src] = filename
+        attrs.update(opts)
+        return haml_tag(:script, attrs)
     else
+        attrs.update(opts)
         File.open(filename) do |file|
-            haml_tag(:script, file.read, :type => "text/javascript")
+            return haml_tag(:script, file.read, attrs)
         end
     end
 end
 
-def load_css filename
+def load_css(filename, opts={})
     if IS_DEVEL then
-        haml_tag(:link, {:href=>filename, :rel => "stylesheet"})
+        attrs = {:href => filename, :rel => "stylesheet"}
+        attrs.update(opts)
+        haml_tag(:link, attrs)
     else
         File.open(filename) do |file|
-            haml_tag(:style, file.read, :type => "text/css")
+            attrs = {:type => "text/css"}
+            attrs.update(opts)
+            haml_tag(:style, file.read, attrs)
         end
     end
 end

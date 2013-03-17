@@ -1,7 +1,7 @@
-task :default => :haml
+task :default => [:haml, :javascript, :static]
 
 desc "Compile the haml files into html"
-task :haml => :javascript
+task :haml
 
 desc "Compile the coffee scripts into javascript"
 task :javascript
@@ -10,7 +10,7 @@ desc "Place all the static files in the right place"
 task :static => :downloadable_static
 
 desc "Package everything into one html file"
-task :package => [:clear, :set_to_prod, :haml]
+task :package => [:clear, :set_to_prod, :static, :javascript, :haml]
 
 task :set_to_prod do
     ENV["PROD"] = "true"
@@ -19,14 +19,11 @@ end
 FileList["src/*.haml"].each do |haml_file|
     dest = haml_file.pathmap("build/%n.html")
     task :haml => dest
-    file dest => ["build", haml_file, :static] do
+    file dest => ["build", haml_file] do
         cd "build" do
             sh "haml -I .. -r custom_haml ../#{haml_file} ../#{dest}"
         end
     end 
-    if not ENV["PROD"].nil? then
-        file dest => :javascript
-    end
 end
 
 FileList["src/*.coffee"].each do |coffee_file|
