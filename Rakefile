@@ -16,6 +16,7 @@ task :set_to_prod do
     ENV["PROD"] = "true"
 end
 
+directory "build"
 FileList["src/*.haml"].each do |haml_file|
     dest = haml_file.pathmap("build/%n.html")
     task :haml => dest
