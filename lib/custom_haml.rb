@@ -1,15 +1,20 @@
 require 'base64'
+require 'haml'
 
-PACKAGE = ! ENV['PACKAGE'].nil?
+class Package
+    include Singleton
+    attr_accessor :enable
+end
+Package.instance.enable = false
 
 def include_tag(tag_name, filename, src_attr, opts={})
     attrs = {}
-    if not PACKAGE then
+    if not Package.instance.enable then
         attrs[src_attr] = filename
     end
     attrs.update(opts)
 
-    if PACKAGE then
+    if Package.instance.enable then
         File.open(filename) do |file|
             return haml_tag(tag_name, file.read, attrs)
         end
@@ -24,7 +29,7 @@ def include_js(filename, opts={})
 end
 
 def include_css(filename, opts={})
-    if PACKAGE then
+    if Package.instance.enable then
         tag = :style
         attrs = {:type => "text/css"}
     else
@@ -50,7 +55,7 @@ def include_img(filename, mimetype=nil, attrs={})
     end
 
     opts = {:src => filename}
-    if PACKAGE then
+    if Package.instance.enable then
         content = File.open(filename) do |file|
             Base64.encode64(file.read)
         end
@@ -58,4 +63,13 @@ def include_img(filename, mimetype=nil, attrs={})
     end
     opts.update(attrs)
     return haml_tag(:img, opts)
+end
+
+def hamlfy(src, dest)
+    puts "#{src} -> #{dest}"
+    open(src) do |srcfile|
+        template = srcfile.read
+        interpolated = Haml::Engine.new(template).render
+        open(dest, "w") {|outfile| outfile.write(interpolated)}
+    end
 end

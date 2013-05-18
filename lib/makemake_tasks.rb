@@ -1,4 +1,6 @@
 require 'rake'
+require 'yaml'
+require 'custom_haml'
 
 task :default => [:haml, :javascript, :static]
 
@@ -24,7 +26,7 @@ FileList["src/*.haml"].each do |haml_file|
     task :haml => dest
     file dest => ["build", haml_file] do
         cd "build" do
-            sh "haml -I .. -r custom_haml ../#{haml_file} ../#{dest}"
+            hamlfy('../' + haml_file, '../' + dest)
         end
     end 
 end
@@ -39,7 +41,7 @@ end
 
 def downloads()
     if File.exists?('downloads.yaml') then
-        return YAML.parse_file('downloads.yaml').to_ruby
+        return YAML::load(open('downloads.yaml'))
     end
     return {}
 end
