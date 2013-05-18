@@ -1,0 +1,44 @@
+#!/usr/bin/env ruby
+require 'makemake_tasks'
+
+def task_by_name name
+    name = name.to_s
+    Rake::Task.tasks.each do |t|
+        if t.name == name
+            return t
+        end
+    end
+end
+
+def parse_args
+    options = {}
+    parser = OptionParser.new do |opts|
+        opts.banner = "Usage: makemake.rb COMMAND
+        COMMAND: one of clear, build"
+    end.parse!
+
+    if ARGV.length != 1
+        raise ArgumentError.new(
+        	"Wrong number of arguments (#{ARGV.length}, must be 1)"
+        )
+    elsif ! ["build", "clear"].include?(ARGV[0])
+        raise ArgumentError.new(
+        	"Command must be on of clear, build (not #{ARGV[0]})"
+        )
+    end
+
+    return options, ARGV[0]
+end
+
+begin
+    opts, cmd = parse_args
+rescue ArgumentError => e
+    puts e
+    exit 1
+end
+
+if cmd == "clear"
+    task_by_name("clear").invoke()
+elsif cmd == "build"
+    task_by_name("default").invoke()
+end

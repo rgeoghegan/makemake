@@ -1,3 +1,5 @@
+require 'rake'
+
 task :default => [:haml, :javascript, :static]
 
 desc "Compile the haml files into html"
