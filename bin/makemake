@@ -37,6 +37,15 @@ def parse_args
     return options, ARGV[0]
 end
 
+def find_coffee_or_die
+	begin
+		sh "which coffee"
+	rescue RuntimeError
+		puts "Could not find coffee-script executable coffee in path."
+		exit 1
+	end
+end
+
 begin
     opts, cmd = parse_args
 rescue ArgumentError => e
@@ -50,4 +59,7 @@ if cmd == "clear"
 elsif cmd == "build" and opts[:package]
 	task_name = "package"
 end
+
+find_coffee_or_die
+
 task_by_name(task_name).invoke()
