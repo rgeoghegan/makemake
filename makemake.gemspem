@@ -1,12 +1,17 @@
 Gem::Specification.new do |gem|
 	gem.name = "makemake"
-	gem.version = "0.1.0"
+	gem.version = "0.2.0"
 	gem.date = "2013-05-17"
 	gem.summary = "Website maker"
 	gem.description = "Tools to use coffeescript and haml to compile multiple
 		files into one all signing all dancing html file"
 	gem.email = "r.geoghegan@gmail.com"
-	gem.authors = ["Rory Geoghegan"]
+	gem.author = "Rory Geoghegan"
+	gem.homepage = "https://github.com/rgeoghegan/makemake"
+	gem.license = "MIT"
 	gem.files = Dir.glob("lib/**")
 	gem.executables = ["makemake"]
+	gem.add_runtime_dependency "listen", [">= 1.1.2"]
+	gem.add_runtime_dependency "rake", [">= 10.0.4"]
+	gem.add_runtime_dependency "colorize", [">= 0.5.8"]
 end

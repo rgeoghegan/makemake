@@ -1,21 +1,15 @@
 #!/usr/bin/env ruby
-require 'rubygems'
 require 'makemake_tasks'
+require 'listen'
+require 'colorize'
 
-def task_by_name name
-    name = name.to_s
-    Rake::Task.tasks.each do |t|
-        if t.name == name
-            return t
-        end
-    end
-end
+COMMANDS = ["build", "clear", "clear_all", "perpetual"]
 
 def parse_args
     options = {:package => false}
     parser = OptionParser.new do |opts|
         opts.banner = "Usage: makemake.rb COMMAND
-	COMMAND: one of clear, build"
+	COMMAND: one of #{COMMANDS.join(", ")}"
 
         opts.on("-p", "--[no-]package",
         	"Build packaged (self-contained) html") do |p|
@@ -24,13 +18,14 @@ def parse_args
 		end
     end.parse!
 
+
     if ARGV.length != 1
         raise ArgumentError.new(
         	"Wrong number of arguments (#{ARGV.length}, must be 1)"
         )
-    elsif ! ["build", "clear"].include?(ARGV[0])
+    elsif ! COMMANDS.include?(ARGV[0])
         raise ArgumentError.new(
-        	"Command must be on of clear, build (not #{ARGV[0]})"
+        	"Command must be one of #{COMMANDS.join(", ")} (not #{ARGV[0]})"
         )
     end
 
@@ -38,11 +33,30 @@ def parse_args
 end
 
 def find_coffee_or_die
-	begin
-		sh "which coffee"
-	rescue RuntimeError
-		puts "Could not find coffee-script executable coffee in path."
-		exit 1
+	verbose(false) do
+		sh("which -s coffee") do |ok, res|
+			if ! ok then
+				puts "Could not find coffee-script executable coffee in path."
+				exit 1
+			end
+		end
+	end
+end
+
+def perpetual(task)
+	task.invoke()
+	Listen.to!('src', 'static') do |modified, added, removed|
+		added.each do |filename|
+			puts "Added #{filename}".green
+		end
+		modified.each do |filename|
+			puts "Modified #{filename}".yellow
+		end
+		removed.each do |filename|
+			puts "Deleted #{filename}".red
+		end
+
+		run_no_fail task
 	end
 end
 
@@ -53,13 +67,19 @@ rescue ArgumentError => e
     exit 1
 end
 
-task_name = "default"
-if cmd == "clear"
-	task_name = "clear"
-elsif cmd == "build" and opts[:package]
-	task_name = "package"
-end
-
 find_coffee_or_die
 
-task_by_name(task_name).invoke()
+case cmd
+when "clear"
+	CLEAR_TASK.invoke
+when "clear_all"
+	CLEAR_ALL_TASK.invoke
+when "perpetual"
+	perpetual(task_by_symbol :default)
+else
+	if opts[:package]
+		PACKAGE_TASK.invoke()
+	else
+		DEFAULT_TASK.invoke()
+	end
+end

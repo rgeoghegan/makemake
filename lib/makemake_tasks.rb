@@ -85,10 +85,23 @@ task :clear do
     rm_rf "build"
 end
 
-desc "Run this script every second to pick up changes"
-task :perpet do
-    while true do
-        sh 'rake'
-        sleep 1
+def task_by_symbol name
+    name = name.to_s
+    return Rake::Task[name.to_sym]
+end
+
+def run_no_fail(task)
+    # Runs the default task and if anything fails, catches and prints the
+    # exception.
+    Rake::Task.tasks.each {|t| t.reenable}
+    begin
+        task.invoke
+    rescue RuntimeError => e
+        puts e
     end
 end
+
+DEFAULT_TASK = task_by_symbol :default
+CLEAR_TASK = task_by_symbol :clear
+CLEAR_ALL_TASK = task_by_symbol :clear_all
+PACKAGE_TASK = task_by_symbol :package
