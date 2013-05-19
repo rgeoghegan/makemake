@@ -13,15 +13,15 @@ Give a list of downloads in downloads.yaml
 
     jquery.js: http://blah.com/jquery.js
 
-Run rake:
+Run the makemake command:
 
-    rake
+    makemake build
 
 And get your finished web page in build/blah.html.
 
 To get a single html page with all the resources inline, use
 
-	rake package
+	makemake package
 
 haml tags:
 ----------
@@ -39,3 +39,10 @@ to include either a link tag for the javascript or the css file outright in (you
 	= include_tag([tag name], [attr name for link], [extra :key => val attributes])
 
 to do what you want.
+
+Perpetual
+---------
+
+Run the following to watch all the files, and compile when a file changes:
+
+	makemake perpet
