@@ -3,21 +3,26 @@ require 'makemake_tasks'
 require 'listen'
 require 'colorize'
 
-COMMANDS = ["build", "clear", "clear_all", "perpetual"]
+COMMANDS = ["build", "package", "clear", "clear_all", "perpetual", "new"]
 
 def parse_args
     options = {:package => false}
     parser = OptionParser.new do |opts|
-        opts.banner = "Usage: makemake.rb COMMAND
-	COMMAND: one of #{COMMANDS.join(", ")}"
+        help = [
+            "build: downloads all the files speicifies in downloads.yaml, builds the necessary html and js files, and copies them along with everything else into build/",
+            "package: packages all js, html, css and images into one html file",
+            "clear: deletes the build/ directory",
+            "clear_all: same as clear but also deletes the static_downloads/ directory",
+		    "perpetual: run makemake build in a loop each time a file is modified",
+            "new: sets up the directories and necessary files for a new makemake project"
+        ].map do |cmd|
+            "\t" + cmd
+        end
 
-        opts.on("-p", "--[no-]package",
-        	"Build packaged (self-contained) html") do |p|
-		    Package.instance.enable = p
-		    options[:package] = true
-		end
+        opts.banner = (
+            "Usage: makemake.rb COMMAND\n\nCOMMAND: one of\n" + help.join("\n")
+        )
     end.parse!
-
 
     if ARGV.length != 1
         raise ArgumentError.new(
@@ -41,6 +46,11 @@ def find_coffee_or_die
 			end
 		end
 	end
+end
+
+def task_by_name name
+    name = name.to_s
+    return Rake::Task[name.to_sym]
 end
 
 def perpetual(task)
@@ -70,16 +80,11 @@ end
 find_coffee_or_die
 
 case cmd
-when "clear"
-	CLEAR_TASK.invoke
-when "clear_all"
-	CLEAR_ALL_TASK.invoke
 when "perpetual"
-	perpetual(task_by_symbol :default)
+	perpetual(task_by_name "default")
+when "build"
+    task_by_name("default").invoke
 else
-	if opts[:package]
-		PACKAGE_TASK.invoke()
-	else
-		DEFAULT_TASK.invoke()
-	end
+    task_by_name(cmd).invoke
 end
+

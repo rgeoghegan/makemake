@@ -85,10 +85,17 @@ task :clear do
     rm_rf "build"
 end
 
-def task_by_symbol name
-    name = name.to_s
-    return Rake::Task[name.to_sym]
+file "downloads.yaml" do
+    open("downloads.yaml", "w") do |outfile|
+        outfile.write("# example line:\njquery.js: http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js")
+    end
 end
+
+directory "src"
+directory "static"
+
+desc "Creates all the necessary files and directories for a new instance"
+task :new => ["downloads.yaml", "src", "static"]
 
 def run_no_fail(task)
     # Runs the default task and if anything fails, catches and prints the
@@ -100,8 +107,3 @@ def run_no_fail(task)
         puts e
     end
 end
-
-DEFAULT_TASK = task_by_symbol :default
-CLEAR_TASK = task_by_symbol :clear
-CLEAR_ALL_TASK = task_by_symbol :clear_all
-PACKAGE_TASK = task_by_symbol :package
