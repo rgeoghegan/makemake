@@ -95,7 +95,7 @@ directory "src"
 directory "static"
 
 desc "Creates all the necessary files and directories for a new instance"
-task :new => ["downloads.yaml", "src", "static"]
+task :init => ["downloads.yaml", "src", "static"]
 
 def run_no_fail(task)
     # Runs the default task and if anything fails, catches and prints the

@@ -67,6 +67,11 @@ end
 
 def hamlfy(src, dest)
     puts "#{src} -> #{dest}"
+
+    if ENV["PACKAGE"] == "true"
+        Package.instance.enable = true
+    end
+
     open(src) do |srcfile|
         template = srcfile.read
         interpolated = Haml::Engine.new(template).render

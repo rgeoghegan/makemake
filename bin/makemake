@@ -3,7 +3,7 @@ require 'makemake_tasks'
 require 'listen'
 require 'colorize'
 
-COMMANDS = ["build", "package", "clear", "clear_all", "perpetual", "new"]
+COMMANDS = ["build", "package", "clear", "clear_all", "perpetual", "init"]
 
 def parse_args
     options = {:package => false}
@@ -14,7 +14,7 @@ def parse_args
             "clear: deletes the build/ directory",
             "clear_all: same as clear but also deletes the static_downloads/ directory",
 		    "perpetual: run makemake build in a loop each time a file is modified",
-            "new: sets up the directories and necessary files for a new makemake project"
+            "init: sets up the directories and necessary files for a new makemake project"
         ].map do |cmd|
             "\t" + cmd
         end
