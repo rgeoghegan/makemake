@@ -7,7 +7,7 @@ COMMANDS = ["build", "package", "clear", "clear_all", "perpetual", "init"]
 
 def parse_args
     options = {:package => false}
-    parser = OptionParser.new do |opts|
+    OptionParser.new do |opts|
         help = [
             "build: downloads all the files speicifies in downloads.yaml, builds the necessary html and js files, and copies them along with everything else into build/",
             "package: packages all js, html, css and images into one html file",
@@ -24,7 +24,9 @@ def parse_args
         )
     end.parse!
 
-    if ARGV.length != 1
+    if ARGV.length == 0
+        return options, "build"
+    elsif ARGV.length != 1
         raise ArgumentError.new(
         	"Wrong number of arguments (#{ARGV.length}, must be 1)"
         )
