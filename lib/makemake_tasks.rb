@@ -39,6 +39,16 @@ FileList["src/*.coffee"].each do |coffee_file|
     end
 end
 
+FileList["src/*.ts"].each do |typescript_file|
+    if not typescript_file[-5..-1] == ".d.ts" then
+        dest = typescript_file.pathmap("build/%n.js")
+        task :javascript => dest
+        file dest => ["build", typescript_file] do
+            sh "tsc --out #{dest} #{typescript_file}"
+        end
+    end
+end
+
 def downloads()
     if File.exists?('downloads.yaml') then
         return YAML::load(open('downloads.yaml'))
