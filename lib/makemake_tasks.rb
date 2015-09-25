@@ -49,6 +49,14 @@ FileList["src/*.ts"].each do |typescript_file|
     end
 end
 
+FileList["src/*.jsx"].each do |jsx_file|
+    dest = jsx_file.pathmap("build/%n.js")
+    task :javascript => dest
+    file dest => ["build", jsx_file] do
+        sh "jsx -x jsx src/ build/"
+    end
+end
+
 def downloads()
     if File.exists?('downloads.yaml') then
         return YAML::load(open('downloads.yaml'))
