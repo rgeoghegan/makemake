@@ -70,13 +70,16 @@ directory "static_downloads"
 downloads.each_pair do |name, src|
     dest = "static_downloads/#{name}"
     task :downloadable_static => dest
-    file dest => ["static_downloads"] do
+
+    directory dest.pathmap("%d")
+    file dest => ["static_downloads", dest.pathmap("%d")] do
         sh "wget -O #{dest} #{src}"
     end
 
     real_dest = "build/#{name}"
+    directory real_dest.pathmap("%d")
     task :static => ["build", real_dest]
-    file real_dest => dest do
+    file real_dest => [dest, real_dest.pathmap("%d")] do
         cp(dest, real_dest)
     end
 end
@@ -84,7 +87,8 @@ end
 FileList["static/**/*"].each do |static|
     if File.file? static then
         dest = 'build' + static.sub(/^static/, '')
-        dirname = File.dirname dest
+        dirname = dest.pathmap("%d")
+
         directory dirname
         file dest => [dirname, static] do
             cp static, dest
