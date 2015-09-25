@@ -8,19 +8,22 @@ COMMANDS = ["build", "package", "clear", "clear_all", "perpetual", "init"]
 def parse_args
     options = {:package => false}
     OptionParser.new do |opts|
-        help = [
-            "build: downloads all the files speicifies in downloads.yaml, builds the necessary html and js files, and copies them along with everything else into build/",
-            "package: packages all js, html, css and images into one html file",
-            "clear: deletes the build/ directory",
-            "clear_all: same as clear but also deletes the static_downloads/ directory",
-		    "perpetual: run makemake build in a loop each time a file is modified",
-            "init: sets up the directories and necessary files for a new makemake project"
-        ].map do |cmd|
-            "\t" + cmd
-        end
-
         opts.banner = (
-            "Usage: makemake.rb COMMAND\n\nCOMMAND: one of\n" + help.join("\n")
+        "Usage: makemake.rb COMMAND\n" +
+        "" +
+        "COMMAND: one of\n" +
+        "" +
+        "  build        downloads all the files speicifies in downloads.yaml, builds the\n" +
+        "               necessary html and js files, and copies them along with everything\n" +
+        "               else into build/\n" +
+        "  package      packages all js, html, css and images into one html file\n" +
+        "  clear        deletes the build/ directory\n" +
+        "  clear_all    same as clear but also deletes the\n" +
+        "               static_downloads/ directory.\n" +
+        "  perpetual    run makemake build in a loop each time a file is\n" +
+        "               modified.\n" +
+        "  init         sets up the directories and necessary files for a new makemake\n" +
+        "               project.\n"
         )
     end.parse!
 
