@@ -1,7 +1,7 @@
 Gem::Specification.new do |gem|
 	gem.name = "makemake"
-	gem.version = "0.2.0"
-	gem.date = "2013-05-17"
+	gem.version = "0.3.0"
+	gem.date = "2015-09-25"
 	gem.summary = "Website maker"
 	gem.description = "Tools to use coffeescript and haml to compile multiple
 		files into one all signing all dancing html file"
